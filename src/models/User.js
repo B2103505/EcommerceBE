@@ -7,9 +7,9 @@ const userSchema = new Schema({
   phoneNumber: { type: String },
   fullName: { type: String },
   avatar: { type: String },
-  role: { type: Schema.Types.ObjectId, ref: 'Role' },
-  access_token: {type: String, required: true},
-  refresh_token: {type: String, required: true},
+  role: { type: Schema.Types.ObjectId, ref: 'Role', required: false, default: null },
+  access_token: { type: String, required: false },
+  refresh_token: { type: String, required: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
