@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const discountSchema = new Schema({
-    value: { type: Number, required: true },
-    startDate: { type: Date },
-    endDate: { type: Date },
-  });
-  
-  module.exports = mongoose.model('Discount', discountSchema);
-  
+  Discount_Value: { type: Number, required: true },
+  Discount_Start_Date: { type: Date },
+  Discount_End_Date: { type: Date },
+});
+
+module.exports = mongoose.model('Discount', discountSchema);

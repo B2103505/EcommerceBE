@@ -2,24 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
-    cart: { type: Schema.Types.ObjectId, ref: 'Cart' },
-    deliveryDate: { type: Date },
-    fee: { type: Number },
-    totalAmount: { type: Number },
-    status: { type: Schema.Types.ObjectId, ref: 'OrderStatus' },
+    Order_Delivery_Date: { type: Date },
+    Order_Fee: { type: Number },
+    Order_Total_Amount: { type: Number },
+    Order_Status_Id: { type: Schema.Types.ObjectId, ref: 'OrderStatus', required: true },
+    Cart_Id: { type: Schema.Types.ObjectId, ref: 'Cart' },
+    Payment_Method_Id: { type: Schema.Types.ObjectId, ref: 'PaymentMethod', required: true },
+    Payment_Status_Id: { type: Schema.Types.ObjectId, ref: 'PaymentStatus', required: true },
 
-    paymentMethod: { type: Schema.Types.ObjectId, ref: 'PaymentMethod', required: true },
-    paymentStatus: { type: Schema.Types.ObjectId, ref: 'PaymentStatus', required: true },
-
-    // Thêm thông tin địa chỉ giao hàng
-    shippingAddress: {
-        fullname: { type: String, required: true },
-        phone: { type: String, required: true },
-        province: { type: String, required: true },
-        district: { type: String, required: true },
-        ward: { type: String, required: true },
-        detailAddress: { type: String, required: true }
-    }
+    Address_Id: { type: Schema.Types.ObjectId, ref: 'Address' }
 
 }, { timestamps: true });
 

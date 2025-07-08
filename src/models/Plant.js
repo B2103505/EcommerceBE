@@ -2,25 +2,25 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const plantSchema = new Schema({
-    name: { type: String, required: true },
-    scientificName: { type: String },
-    leafShape: { type: String },
-    leafColor: { type: String },
-    growthForm: { type: String },
-    size: { type: String },
-    context: { type: String },
-    light: { type: String },
-    foliageDensity: { type: String },
-    otherName: { type: String },
-    description: { type: String },
-    quantity: { type: Number },
-    sold: { type: Number, default: 0 },
-    status: { type: String, enum: ['available', 'unavailable'] },
-    price: { type: Number, required: true },
-    category: { type: Schema.Types.ObjectId, ref: 'Category' },
-    averageRating: { type: Number, default: 0 },
-    ratingCount: { type: Number, default: 0 },
+    Plant_Name: { type: String, required: true },
+    Plant_Scientific_Name: { type: String },
+    Plant_Leaf_Shape: { type: String },
+    Plant_Leaf_Color: { type: String },
+    Plant_Growth_Form: { type: String },
+    Plant_Size: { type: String },
+    Plant_Context: { type: String },
+    Plant_Light: { type: String },
+    Plant_Foliage_Density: { type: String },
+    Plant_Other_Name: { type: String },
+    Plant_Description: { type: String },
+    Plant_Quantity: { type: Number },
+    Plant_Sold: { type: Number, default: 0 },
+    Plant_Status: { type: String, enum: ['available', 'unavailable'] },
+    Plant_Price: { type: Number, required: true },
+    Category_Id: { type: Schema.Types.ObjectId, ref: 'Category' },
+    Plant_averageRating: { type: Number, default: 0 },
+    Plant_ratingCount: { type: Number, default: 0 },
 
-}, { timestamps: true });
+}, { timestamps: true }); 
 
 module.exports = mongoose.model('Plant', plantSchema);
