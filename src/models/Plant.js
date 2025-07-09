@@ -17,7 +17,7 @@ const plantSchema = new Schema({
     Plant_Sold: { type: Number, default: 0 },
     Plant_Status: { type: String, enum: ['available', 'unavailable'] },
     Plant_Price: { type: Number, required: true },
-    Category_Id: { type: Schema.Types.ObjectId, ref: 'Category' },
+    Category_Id: { type: Schema.Types.ObjectId, ref: 'Category', required: false, default: null },
     Plant_averageRating: { type: Number, default: 0 },
     Plant_ratingCount: { type: Number, default: 0 },
 

@@ -14,7 +14,7 @@ const createUserService = (NewUser) => {
             })
             if (checkUser !== null) {
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'This email is already!!!'
                 })
             }
@@ -24,10 +24,10 @@ const createUserService = (NewUser) => {
                 User_Password: hash,
                 User_PhoneNumber,
                 User_Fullname,
-                User_Avatar,
-                Role_Id,
-                access_token,
-                refresh_token
+                User_Avatar: User_Avatar || null,
+                Role_Id: '686d164e833c9c6a3a7729ec',
+                access_token: access_token || null,
+                refresh_token: refresh_token || null
             })
             console.log(createUser);
             if (createUser) {
@@ -56,7 +56,7 @@ const LoginUserService = (LoginUser) => {
 
             if (checkUser === null) {
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'This email is not exist !!!'
                 })
             }
@@ -65,7 +65,7 @@ const LoginUserService = (LoginUser) => {
 
             if (!comparePW) {
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'The password or email is incorrect !!!'
                 })
             }
@@ -147,15 +147,19 @@ const DeleteUserService = (id) => {
     })
 }
 
-const GetAllUserService = () => {
+const GetAllUserService = (limit, page) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.find()
+            const allUser = await User.find().limit(limit).skip((page - 1) * limit)
+            const totalUser = await User.countDocuments()
 
             resolve({
                 status: 'OK',
                 message: 'Get All user success',
-                data: allUser
+                data: allUser,
+                total: totalUser,
+                pageCurr: page,
+                totalPage: Math.ceil(totalUser / limit)
             })
         } catch (e) {
             reject(e);
@@ -187,6 +191,7 @@ const GetDetailUserUserService = (id) => {
         }
     })
 }
+
 
 module.exports = {
     createUserService, LoginUserService,

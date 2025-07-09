@@ -18,6 +18,30 @@ const generalRefreshToken = (payload) => {
     return refresh_token;
 }
 
+const RefreshTokenJwtService = (token) => {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.REFRESH_TOKEN, async (err, decoded) => {
+            if (err || !decoded?.payload) {
+                return resolve({
+                    status: 'ERR',
+                    message: 'Invalid or expired refresh token',
+                });
+            }
+
+            const { id, Role_Id } = decoded.payload;
+
+            const newAccessToken = generalAccessToken({ id, Role_Id });
+
+            return resolve({
+                status: 'OK',
+                message: 'Refresh success',
+                access_token: newAccessToken,
+            });
+        });
+    });
+};
+
 module.exports = {
     generalAccessToken, generalRefreshToken,
+    RefreshTokenJwtService,
 }

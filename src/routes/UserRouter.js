@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UserController = require('../controllers/UserController');
 const RoleController = require('../controllers/RoleController');
-const { AuthMiddleWare } = require("../MiddleWare/AuthMiddleWare");
+const { AuthMiddleWare, AuthSelfMiddleWare } = require("../MiddleWare/AuthMiddleWare");
 
 router.post('/init-roles', RoleController.CreateRolesController);
 
@@ -11,6 +11,7 @@ router.post('/sign-in', UserController.LoginUserController);
 router.put('/update-user/:id', UserController.UpdateUserController);
 router.delete('/delete-user/:id', AuthMiddleWare, UserController.DeleteUserController);
 router.get('/getAll', AuthMiddleWare, UserController.GetAllUserController);
-router.get('/get-detail/:id', UserController.GetDetailUserController);
+router.get('/get-detail/:id', AuthSelfMiddleWare, UserController.GetDetailUserController);
+router.post('/refresh-token', UserController.RefreshTokenUserController);
 
 module.exports = router

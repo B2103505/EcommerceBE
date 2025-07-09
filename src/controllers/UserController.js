@@ -1,12 +1,14 @@
 const UserService = require('../services/UserService')
+const JwtService = require('../services/JwtService')
 
 const createUserController = async (req, res) => {
     try {
         const { User_Email, User_Password, User_PhoneNumber, User_Fullname, User_Avatar } = req.body;
+        console.log('req body', req.body)
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isCheckEmail = regex.test(User_Email);
         // console.log('check email', isCheckEmail);
-        if (!User_Email || !User_Password || !User_PhoneNumber || !User_Fullname || !User_Avatar) {
+        if (!User_Email || !User_Password || !User_PhoneNumber || !User_Fullname) {
             return res.status(200).json({
                 errCode: 101,
                 status: 'ERR',
@@ -35,6 +37,7 @@ const createUserController = async (req, res) => {
 const LoginUserController = async (req, res) => {
     try {
         const { User_Email, User_Password } = req.body;
+
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isCheckEmail = regex.test(User_Email);
 
@@ -116,7 +119,8 @@ const DeleteUserController = async (req, res) => {
 
 const GetAllUserController = async (req, res) => {
     try {
-        const response = await UserService.GetAllUserService()
+        const { page, limit } = req.query
+        const response = await UserService.GetAllUserService(Number(limit) || 8, Number(page) || 1)
         return res.status(200).json(response)
 
     } catch (e) {
@@ -154,9 +158,41 @@ const GetDetailUserController = async (req, res) => {
     }
 }
 
+const RefreshTokenUserController = async (req, res) => {
+    try {
+        const bearerToken = req.headers.authorization;
+        // Kiểm tra header hợp lệ
+        if (!bearerToken || !bearerToken.startsWith('Bearer ')) {
+            return res.status(401).json({
+                status: 'ERR',
+                message: 'Authorization header missing or invalid'
+            });
+        }
+
+        const token = bearerToken.split(' ')[1]
+        if (!token) {
+            return res.status(200).json({
+                errCode: 101,
+                status: 'ERR',
+                message: 'This token require!!!'
+            })
+        }
+
+        const response = await JwtService.RefreshTokenJwtService(token)
+        return res.status(200).json(response)
+    } catch (e) {
+        console.error('❌ Error in RefreshTokenUserController:', e);
+        res.status(400).json({
+            status: 'ERR',
+            message: e.message || 'Something went wrong',
+            stack: e.stack
+        });
+    }
+}
+
 module.exports = {
     createUserController, LoginUserController,
     UpdateUserController, DeleteUserController,
     GetAllUserController, GetDetailUserController,
-
+    RefreshTokenUserController,
 }

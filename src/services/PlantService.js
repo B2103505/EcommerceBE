@@ -1,0 +1,209 @@
+const Plant = require('../models/Plant');
+const bcrypt = require('bcrypt')
+const { generalAccessToken, generalRefreshToken } = require('./JwtService');
+
+
+const createPlantService = (NewPlant) => {
+    return new Promise(async (resolve, reject) => {
+
+        const { Plant_Name, Plant_Scientific_Name, Plant_Leaf_Shape, Plant_Leaf_Color, Plant_Growth_Form, Plant_Size,
+            Plant_Context, Plant_Light, Plant_Foliage_Density, Plant_Other_Name, Plant_Description, Plant_Quantity,
+            Plant_Status, Plant_Price } = NewPlant;
+
+        try {
+            const checkPlant = await Plant.findOne({
+                Plant_Name: Plant_Name
+            })
+
+            if (checkPlant !== null) {
+                resolve({
+                    status: 'OK',
+                    message: 'This plant is already!!!'
+                })
+            }
+
+            const createPlant = await Plant.create({
+                Plant_Name, Plant_Scientific_Name, Plant_Leaf_Shape, Plant_Leaf_Color, Plant_Growth_Form, Plant_Size,
+                Plant_Context, Plant_Light, Plant_Foliage_Density, Plant_Other_Name, Plant_Description, Plant_Quantity,
+                Plant_Status, Plant_Price
+            })
+
+            if (createPlant) {
+                resolve({
+                    status: 'OK',
+                    message: 'create success',
+                    data: createPlant
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+const UpdatePlantService = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+            const checkPlant = await Plant.findOne({ _id: id })
+
+            if (checkPlant === null) {
+                resolve({
+                    status: 'OK',
+                    message: 'Plant is not exist',
+                })
+            }
+
+            const updatePlant = await Plant.findByIdAndUpdate(id, data, { new: true })
+
+            resolve({
+                status: 'OK',
+                message: 'update plant success',
+                data: updatePlant
+            })
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+const DetailPlantService = (id) => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+            const plant = await Plant.findOne({ _id: id })
+
+            if (plant === null) {
+                return resolve({
+                    status: 'OK',
+                    message: 'Plant is not exist',
+                })
+            }
+
+            resolve({
+                status: 'OK',
+                message: 'success',
+                data: plant
+            })
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+const DeletePlantService = (id) => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+            const checkPlant = await Plant.findOne({ _id: id })
+
+            if (checkPlant === null) {
+                return resolve({
+                    status: 'OK',
+                    message: 'Plant is not exist',
+                })
+            }
+
+            await Plant.findByIdAndDelete(id)
+
+            resolve({
+                status: 'OK',
+                message: 'Delete plant success',
+            })
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+// const GetAllPlantService = (limit, page, sort, filter) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const totalPlant = await Plant.countDocuments()
+//             if (filter) {
+//                 const label = filter[0]
+//                 const allPlantFilter = await Plant.find({
+//                     [label]: { '$regex': filter[1] }
+//                 })
+//                 resolve({
+//                     status: 'OK',
+//                     message: 'Get All user success',
+//                     data: allPlantFilter,
+//                     total: totalPlant,
+//                     pageCurr: page,
+//                     totalPage: Math.ceil(totalPlant / limit)
+//                 })
+//             }
+//             if (sort) {//sorting
+//                 const objectSort = {}
+//                 objectSort[sort[1]] = sort[0]
+//                 const allPlantSort = await Plant.find().limit(limit).skip((page - 1) * limit).sort(objectSort)
+//                 resolve({
+//                     status: 'OK',
+//                     message: 'Get All user success',
+//                     data: allPlantSort,
+//                     total: totalPlant,
+//                     pageCurr: page,
+//                     totalPage: Math.ceil(totalPlant / limit)
+//                 })
+//             }
+//             const allPlant = await Plant.find().limit(limit).skip((page - 1) * limit).sort({
+//                 Plant_Name: sort
+//             })
+//             resolve({
+//                 status: 'OK',
+//                 message: 'Get All user success',
+//                 data: allPlant,
+//                 total: totalPlant,
+//                 pageCurr: page,
+//                 totalPage: Math.ceil(totalPlant / limit)
+//             })
+//         } catch (e) {
+//             reject(e);
+//         }
+//     })
+// }
+
+const GetAllPlantService = (limit, page, sortOrder, sortField, filterKey, filterValue) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const query = {};
+            const sort = {};
+
+            // Tạo filter nếu có
+            if (filterKey && filterValue) {
+                query[filterKey] = { $regex: filterValue, $options: 'i' };
+            }
+
+            // Tạo sort nếu có
+            if (sortField && sortOrder) {
+                sort[sortField] = sortOrder === 'asc' ? 1 : -1;
+            }
+
+            const totalPlant = await Plant.countDocuments(query);
+            const allPlant = await Plant.find(query)
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .sort(sort);
+
+            resolve({
+                status: 'OK',
+                message: 'Get All Plant success',
+                data: allPlant,
+                total: totalPlant,
+                pageCurr: page,
+                totalPage: Math.ceil(totalPlant / limit)
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+
+
+module.exports = {
+    createPlantService, UpdatePlantService,
+    DetailPlantService, DeletePlantService,
+    GetAllPlantService
+}
