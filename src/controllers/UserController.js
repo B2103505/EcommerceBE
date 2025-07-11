@@ -56,7 +56,13 @@ const LoginUserController = async (req, res) => {
         }
         // console.log(req.body);
         const response = await UserService.LoginUserService(req.body)
-        return res.status(200).json(response)
+        const { refresh_token, ...newResponse } = response
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: false,
+            samesite: 'strict'
+        })
+        return res.status(200).json(newResponse)
     } catch (e) {
         console.error('❌ Error in LoginUserController:', e);
         res.status(400).json({
@@ -159,17 +165,9 @@ const GetDetailUserController = async (req, res) => {
 }
 
 const RefreshTokenUserController = async (req, res) => {
+    // console.log('req.cookies.refresh_token', req.cookies.refresh_token)
     try {
-        const bearerToken = req.headers.authorization;
-        // Kiểm tra header hợp lệ
-        if (!bearerToken || !bearerToken.startsWith('Bearer ')) {
-            return res.status(401).json({
-                status: 'ERR',
-                message: 'Authorization header missing or invalid'
-            });
-        }
-
-        const token = bearerToken.split(' ')[1]
+        const token = req.cookies.refresh_token;
         if (!token) {
             return res.status(200).json({
                 errCode: 101,
@@ -177,11 +175,50 @@ const RefreshTokenUserController = async (req, res) => {
                 message: 'This token require!!!'
             })
         }
-
         const response = await JwtService.RefreshTokenJwtService(token)
         return res.status(200).json(response)
+
+        // const bearerToken = req.headers.authorization;
+        // // Kiểm tra header hợp lệ
+        // if (!bearerToken || !bearerToken.startsWith('Bearer ')) {
+        //     return res.status(401).json({
+        //         status: 'ERR',
+        //         message: 'Authorization header missing or invalid'
+        //     });
+        // }
+
+        // const token = bearerToken.split(' ')[1]
+        // if (!token) {
+        //     return res.status(200).json({
+        //         errCode: 101,
+        //         status: 'ERR',
+        //         message: 'This token require!!!'
+        //     })
+        // }
+
+        // const response = await JwtService.RefreshTokenJwtService(token)
+        // return res.status(200).json(response)
     } catch (e) {
         console.error('❌ Error in RefreshTokenUserController:', e);
+        res.status(400).json({
+            status: 'ERR',
+            message: e.message || 'Something went wrong',
+            stack: e.stack
+        });
+    }
+}
+
+const LogoutUserController = async (req, res) => {
+    // console.log('req.cookies.refresh_token', req.cookies.refresh_token)
+    try {
+        res.clearCookie('refresh_token')
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Logout successfully',
+        })
+
+    } catch (e) {
+        console.error('❌ Error in LogoutUserController:', e);
         res.status(400).json({
             status: 'ERR',
             message: e.message || 'Something went wrong',
@@ -194,5 +231,5 @@ module.exports = {
     createUserController, LoginUserController,
     UpdateUserController, DeleteUserController,
     GetAllUserController, GetDetailUserController,
-    RefreshTokenUserController,
+    RefreshTokenUserController, LogoutUserController
 }

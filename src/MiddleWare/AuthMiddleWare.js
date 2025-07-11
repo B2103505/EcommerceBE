@@ -21,9 +21,8 @@ const AuthMiddleWare = (req, res, next) => {
                 status: 'ERR'
             })
         }
-        const { payload } = user
 
-        if (payload?.Role_Id === '686d164d833c9c6a3a7729e6') {
+        if (user?.Role_Id === '686d164d833c9c6a3a7729e6') {
             return next()
         } else {
             return res.status(400).json({
@@ -53,9 +52,11 @@ const AuthSelfMiddleWare = (req, res, next) => {
                 status: 'ERR'
             })
         }
-        const { payload } = user
 
-        if (payload?.Role_Id === '686d164d833c9c6a3a7729e6' || payload?.id === User_Id) {
+        if (
+            user?.Role_Id === '686d164d833c9c6a3a7729e6' ||
+            String(user?.id) === String(User_Id)
+        ) {
             return next()
         } else {
             return res.status(400).json({

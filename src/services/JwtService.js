@@ -4,15 +4,15 @@ dotenv.config()
 
 const generalAccessToken = (payload) => {
     const access_token = jwt.sign({
-        payload
-    }, process.env.ACCESS_TOKEN, { expiresIn: '3h' })
+        ...payload
+    }, process.env.ACCESS_TOKEN, { expiresIn: '90s' })
 
     return access_token;
 }
 
 const generalRefreshToken = (payload) => {
     const refresh_token = jwt.sign({
-        payload
+        ...payload
     }, process.env.REFRESH_TOKEN, { expiresIn: '30d' })
 
     return refresh_token;
@@ -21,16 +21,17 @@ const generalRefreshToken = (payload) => {
 const RefreshTokenJwtService = (token) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, process.env.REFRESH_TOKEN, async (err, decoded) => {
-            if (err || !decoded?.payload) {
+            // console.log('err', decoded)
+            if (err || !decoded) {
                 return resolve({
                     status: 'ERR',
                     message: 'Invalid or expired refresh token',
                 });
             }
 
-            const { id, Role_Id } = decoded.payload;
+            const { id, Role_Id } = decoded;
 
-            const newAccessToken = generalAccessToken({ id, Role_Id });
+            const newAccessToken = await generalAccessToken({ id, Role_Id });
 
             return resolve({
                 status: 'OK',

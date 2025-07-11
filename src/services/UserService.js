@@ -103,7 +103,7 @@ const UpdateUserService = (id, data) => {
 
             if (checkUser === null) {
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'User is not exist',
                 })
             }
