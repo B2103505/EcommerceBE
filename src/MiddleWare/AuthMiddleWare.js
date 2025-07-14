@@ -14,7 +14,7 @@ const AuthMiddleWare = (req, res, next) => {
 
     const token = bearerToken.split(' ')[1]
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
-        console.log('error', err)
+
         if (err) {
             return res.status(400).json({
                 message: 'The authentication',
@@ -45,7 +45,10 @@ const AuthSelfMiddleWare = (req, res, next) => {
 
     const token = bearerToken.split(' ')[1]
     const User_Id = req.params.id
+    // console.log('user', User_Id)
+    // console.log('token', token)
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
+        // console.log('err', err)
         if (err) {
             return res.status(400).json({
                 message: 'The authentication',

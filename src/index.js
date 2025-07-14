@@ -21,9 +21,6 @@ app.use(cookieParser())
 
 routes(app);
 
-
-
-
 mongoose.connect(`${process.env.MONGO_db}`)
     .then(() => {
         console.log('connect database success!');

@@ -4,7 +4,7 @@ const JwtService = require('../services/JwtService')
 const createUserController = async (req, res) => {
     try {
         const { User_Email, User_Password, User_PhoneNumber, User_Fullname, User_Avatar } = req.body;
-        console.log('req body', req.body)
+        // console.log('req body', req.body)
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isCheckEmail = regex.test(User_Email);
         // console.log('check email', isCheckEmail);

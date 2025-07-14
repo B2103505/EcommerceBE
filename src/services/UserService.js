@@ -25,11 +25,11 @@ const createUserService = (NewUser) => {
                 User_PhoneNumber,
                 User_Fullname,
                 User_Avatar: User_Avatar || null,
-                Role_Id: '686d164e833c9c6a3a7729ec',
+                Role_Id: Role_Id || '686d164e833c9c6a3a7729ec',
                 access_token: access_token || null,
                 refresh_token: refresh_token || null
             })
-            console.log(createUser);
+            // console.log(createUser);
             if (createUser) {
                 resolve({
                     status: 'OK',
@@ -123,34 +123,29 @@ const UpdateUserService = (id, data) => {
 
 const DeleteUserService = (id) => {
     return new Promise(async (resolve, reject) => {
-
         try {
-            const checkUser = await User.findOne({ _id: id })
-            // console.log('check user', checkUser)
-
-            if (checkUser === null) {
+            const deleted = await User.findByIdAndDelete(id);
+            if (!deleted) {
                 return resolve({
-                    status: 'OK',
-                    message: 'User is not exist',
-                })
+                    status: 'ERR',
+                    message: 'User not found or already deleted'
+                });
             }
-
-            await User.findByIdAndDelete(id)
 
             resolve({
                 status: 'OK',
-                message: 'Delete user success',
-            })
+                message: 'Delete user success'
+            });
         } catch (e) {
             reject(e);
         }
-    })
-}
+    });
+};
 
 const GetAllUserService = (limit, page) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.find().limit(limit).skip((page - 1) * limit)
+            const allUser = await User.find().limit(limit).skip((page - 1) * limit).populate('Role_Id', 'Role_Name');
             const totalUser = await User.countDocuments()
 
             resolve({
