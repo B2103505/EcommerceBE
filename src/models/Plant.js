@@ -20,7 +20,8 @@ const plantSchema = new Schema({
     Category_Id: { type: Schema.Types.ObjectId, ref: 'Category', required: false, default: null },
     Plant_averageRating: { type: Number, default: 0 },
     Plant_ratingCount: { type: Number, default: 0 },
+    Plant_Images: [{ type: String }],
 
-}, { timestamps: true }); 
+}, { timestamps: true });
 
 module.exports = mongoose.model('Plant', plantSchema);

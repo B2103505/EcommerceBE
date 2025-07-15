@@ -8,7 +8,7 @@ const createPlantService = (NewPlant) => {
 
         const { Plant_Name, Plant_Scientific_Name, Plant_Leaf_Shape, Plant_Leaf_Color, Plant_Growth_Form, Plant_Size,
             Plant_Context, Plant_Light, Plant_Foliage_Density, Plant_Other_Name, Plant_Description, Plant_Quantity,
-            Plant_Status, Plant_Price } = NewPlant;
+            Plant_Status, Plant_Price, Plant_Images, Category_Id } = NewPlant;
 
         try {
             const checkPlant = await Plant.findOne({
@@ -25,7 +25,7 @@ const createPlantService = (NewPlant) => {
             const createPlant = await Plant.create({
                 Plant_Name, Plant_Scientific_Name, Plant_Leaf_Shape, Plant_Leaf_Color, Plant_Growth_Form, Plant_Size,
                 Plant_Context, Plant_Light, Plant_Foliage_Density, Plant_Other_Name, Plant_Description, Plant_Quantity,
-                Plant_Status, Plant_Price
+                Plant_Status, Plant_Price, Plant_Images, Category_Id
             })
 
             if (createPlant) {
@@ -115,54 +115,6 @@ const DeletePlantService = (id) => {
         }
     })
 }
-
-// const GetAllPlantService = (limit, page, sort, filter) => {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-//             const totalPlant = await Plant.countDocuments()
-//             if (filter) {
-//                 const label = filter[0]
-//                 const allPlantFilter = await Plant.find({
-//                     [label]: { '$regex': filter[1] }
-//                 })
-//                 resolve({
-//                     status: 'OK',
-//                     message: 'Get All user success',
-//                     data: allPlantFilter,
-//                     total: totalPlant,
-//                     pageCurr: page,
-//                     totalPage: Math.ceil(totalPlant / limit)
-//                 })
-//             }
-//             if (sort) {//sorting
-//                 const objectSort = {}
-//                 objectSort[sort[1]] = sort[0]
-//                 const allPlantSort = await Plant.find().limit(limit).skip((page - 1) * limit).sort(objectSort)
-//                 resolve({
-//                     status: 'OK',
-//                     message: 'Get All user success',
-//                     data: allPlantSort,
-//                     total: totalPlant,
-//                     pageCurr: page,
-//                     totalPage: Math.ceil(totalPlant / limit)
-//                 })
-//             }
-//             const allPlant = await Plant.find().limit(limit).skip((page - 1) * limit).sort({
-//                 Plant_Name: sort
-//             })
-//             resolve({
-//                 status: 'OK',
-//                 message: 'Get All user success',
-//                 data: allPlant,
-//                 total: totalPlant,
-//                 pageCurr: page,
-//                 totalPage: Math.ceil(totalPlant / limit)
-//             })
-//         } catch (e) {
-//             reject(e);
-//         }
-//     })
-// }
 
 const GetAllPlantService = (limit, page, sortOrder, sortField, filterKey, filterValue) => {
     return new Promise(async (resolve, reject) => {
