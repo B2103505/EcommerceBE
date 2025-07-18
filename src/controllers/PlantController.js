@@ -4,7 +4,7 @@ const createPlantController = async (req, res) => {
     try {
         const { Plant_Name, Plant_Scientific_Name, Plant_Leaf_Shape, Plant_Leaf_Color, Plant_Growth_Form, Plant_Size,
             Plant_Context, Plant_Light, Plant_Foliage_Density, Plant_Other_Name, Plant_Description, Plant_Quantity,
-            Plant_Status, Plant_Price, Plant_Images, Category_Id } = req.body;
+            Plant_Status, Plant_Price, Plant_Images, Category_Ids, Discount_Ids } = req.body;
 
         if (!Plant_Name || !Plant_Price || !Plant_Quantity || !Plant_Description) {
             return res.status(200).json({

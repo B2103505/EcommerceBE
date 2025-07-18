@@ -8,7 +8,7 @@ const createPlantService = (NewPlant) => {
 
         const { Plant_Name, Plant_Scientific_Name, Plant_Leaf_Shape, Plant_Leaf_Color, Plant_Growth_Form, Plant_Size,
             Plant_Context, Plant_Light, Plant_Foliage_Density, Plant_Other_Name, Plant_Description, Plant_Quantity,
-            Plant_Status, Plant_Price, Plant_Images, Category_Id } = NewPlant;
+            Plant_Status, Plant_Price, Plant_Images, Category_Ids, Discount_Ids } = NewPlant;
 
         try {
             const checkPlant = await Plant.findOne({
@@ -72,6 +72,8 @@ const DetailPlantService = (id) => {
 
         try {
             const plant = await Plant.findOne({ _id: id })
+                .populate('Category_Ids')
+                .populate('Discount_Ids');
 
             if (plant === null) {
                 return resolve({
