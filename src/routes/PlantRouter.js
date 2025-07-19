@@ -6,7 +6,7 @@ const { AuthMiddleWare, AuthSelfMiddleWare } = require("../MiddleWare/AuthMiddle
 
 router.post('/create', PlantController.createPlantController);
 router.put('/update/:id', AuthMiddleWare, PlantController.UpdatePlantController);
-router.get('/detail/:id', AuthMiddleWare, PlantController.DetailPlantController);
+router.get('/detail/:id', PlantController.DetailPlantController);
 router.delete('/delete/:id', AuthMiddleWare, PlantController.DeletePlantController);
 router.get('/getAllPlant', PlantController.GetAllPlantController);
 

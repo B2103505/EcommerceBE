@@ -53,7 +53,6 @@ const UpdatePlantController = async (req, res) => {
 const DetailPlantController = async (req, res) => {
     try {
         const Plant_Id = req.params.id
-        // const token = req.headers
 
         if (!Plant_Id) {
             return res.status(200).json({

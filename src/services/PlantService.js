@@ -69,17 +69,17 @@ const UpdatePlantService = (id, data) => {
 
 const DetailPlantService = (id) => {
     return new Promise(async (resolve, reject) => {
-
         try {
             const plant = await Plant.findOne({ _id: id })
-                .populate('Category_Ids')
+                .populate('Category_Ids', 'Category_Name')
                 .populate('Discount_Ids');
 
-            if (plant === null) {
+            if (!plant) {
                 return resolve({
-                    status: 'OK',
-                    message: 'Plant is not exist',
-                })
+                    status: 'ERR',
+                    message: 'Plant not found',
+                    data: null
+                });
             }
 
             resolve({
