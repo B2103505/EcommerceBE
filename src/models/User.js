@@ -10,7 +10,6 @@ const userSchema = new Schema({
   Role_Id: { type: Schema.Types.ObjectId, ref: 'Role', required: false, default: null },
   access_token: { type: String, required: false },
   refresh_token: { type: String, required: false },
-  User_Address: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

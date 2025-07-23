@@ -2,7 +2,11 @@ const UserRouter = require('./UserRouter');
 const PlantRouter = require('./PlantRouter');
 const CategoryRouter = require('./CategoryRouter');
 const DiscountRouter = require('./DiscountRouter');
-const CartRouter = require('./CartRouter')
+const CartRouter = require('./CartRouter');
+const AddressRouter = require('./AddressRouter');
+const OrderRouter = require('./OrderRouter');
+
+// const GhnRouter = require('./GhnRouter')
 
 const routes = (app) => {
     app.use('/api/user', UserRouter)
@@ -10,6 +14,8 @@ const routes = (app) => {
     app.use('/api/category', CategoryRouter)
     app.use('/api/discount/', DiscountRouter)
     app.use('/api/cart', CartRouter)
+    app.use('/api/address', AddressRouter);
+    app.use('/api/order', OrderRouter)
 }
 
 module.exports = routes
