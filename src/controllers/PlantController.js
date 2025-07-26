@@ -131,9 +131,26 @@ const GetAllPlantController = async (req, res) => {
     }
 }
 
+const PlantByCateController = async (req, res) => {
+    try {
+        const { categoryId } = req.params;
+        const { page = 1, limit = 10 } = req.query;
+
+        const data = await PlantService.PlantsByCateService(categoryId, page, limit);
+
+        res.status(200).json({
+            status: 'OK',
+            message: 'Lấy danh sách sản phẩm theo danh mục thành công',
+            data
+        });
+    } catch (error) {
+        res.status(500).json({ status: 'ERR', message: error.message });
+    }
+};
+
 
 module.exports = {
     createPlantController, UpdatePlantController,
     DetailPlantController, DeletePlantController,
-    GetAllPlantController
+    GetAllPlantController, PlantByCateController,
 }

@@ -7,7 +7,7 @@ const createUserController = async (req, res) => {
         // console.log('req body', req.body)
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isCheckEmail = regex.test(User_Email);
-        // console.log('check email', isCheckEmail);
+
         if (!User_Email || !User_Password || !User_PhoneNumber || !User_Fullname) {
             return res.status(200).json({
                 errCode: 101,
@@ -21,7 +21,6 @@ const createUserController = async (req, res) => {
                 message: 'The input email not valid!!!'
             })
         }
-        // console.log(req.body);
         const response = await UserService.createUserService(req.body)
         return res.status(200).json(response)
     } catch (e) {
@@ -165,7 +164,6 @@ const GetDetailUserController = async (req, res) => {
 }
 
 const RefreshTokenUserController = async (req, res) => {
-    // console.log('req.cookies.refresh_token', req.cookies.refresh_token)
     try {
         const token = req.cookies.refresh_token;
         if (!token) {
@@ -209,7 +207,6 @@ const RefreshTokenUserController = async (req, res) => {
 }
 
 const LogoutUserController = async (req, res) => {
-    // console.log('req.cookies.refresh_token', req.cookies.refresh_token)
     try {
         res.clearCookie('refresh_token')
         return res.status(200).json({

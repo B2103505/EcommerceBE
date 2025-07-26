@@ -1,6 +1,7 @@
 const Plant = require('../models/Plant');
 const bcrypt = require('bcrypt')
 const { generalAccessToken, generalRefreshToken } = require('./JwtService');
+const Category = require('../models/Category');
 
 
 const createPlantService = (NewPlant) => {
@@ -124,9 +125,21 @@ const GetAllPlantService = (limit, page, sortOrder, sortField, filterKey, filter
             const query = {};
             const sort = {};
 
-            // Tạo filter nếu có
+            // Tạo filter
             if (filterKey && filterValue) {
-                query[filterKey] = { $regex: filterValue, $options: 'i' };
+                if (filterKey === 'Category_Ids') {
+                    const matchedCategories = await Category.find({
+                        Category_Name: { $regex: filterValue, $options: 'i' }
+                    });
+
+                    const matchedCategoryIds = matchedCategories.map(c => c._id);
+
+                    query[filterKey] = { $in: matchedCategoryIds };
+                } else if (filterKey === 'Plant_Status') {
+                    query[filterKey] = { $regex: filterValue, $options: 'i' };
+                } else {
+                    query[filterKey] = { $regex: filterValue, $options: 'i' };
+                }
             }
 
             // Tạo sort nếu có
@@ -154,10 +167,25 @@ const GetAllPlantService = (limit, page, sortOrder, sortField, filterKey, filter
     });
 };
 
+const PlantsByCateService = async (categoryId, page, limit) => {
+    const skip = (page - 1) * limit;
 
+    const total = await Plant.countDocuments({ Category_Ids: categoryId });
+    const plants = await Plant.find({ Category_Ids: categoryId })
+        .skip(skip)
+        .limit(Number(limit))
+        .populate('Category_Ids');
+
+    return {
+        plants,
+        total,
+        currentPage: Number(page),
+        totalPages: Math.ceil(total / limit)
+    };
+};
 
 module.exports = {
     createPlantService, UpdatePlantService,
     DetailPlantService, DeletePlantService,
-    GetAllPlantService
+    GetAllPlantService, PlantsByCateService
 }

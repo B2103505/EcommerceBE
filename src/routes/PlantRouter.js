@@ -9,5 +9,6 @@ router.put('/update/:id', AuthMiddleWare, PlantController.UpdatePlantController)
 router.get('/detail/:id', PlantController.DetailPlantController);
 router.delete('/delete/:id', AuthMiddleWare, PlantController.DeletePlantController);
 router.get('/getAllPlant', PlantController.GetAllPlantController);
+router.get('/by-cate/:categoryId', PlantController.PlantByCateController)
 
 module.exports = router

@@ -9,8 +9,12 @@ const orderSchema = new Schema({
     Cart_Id: { type: Schema.Types.ObjectId, ref: 'Cart' },
     Payment_Method_Id: { type: Schema.Types.ObjectId, ref: 'PaymentMethod', required: true },
     Payment_Status_Id: { type: Schema.Types.ObjectId, ref: 'PaymentStatus', required: true },
-    Address_Id: { type: Schema.Types.ObjectId, ref: 'Address' }
-
+    Address_Id: { type: Schema.Types.ObjectId, ref: 'Address' },
+    User_Id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

@@ -16,8 +16,8 @@ const AddressSchema = new Schema({
   Address_Detail_Address: String,
   Address_Fullname: String,
   Address_Phone: String,
-  Address_Latitude: Number,
-  Address_Longitude: Number,
+  // Address_Latitude: Number,
+  // Address_Longitude: Number,
   User_Id: { type: Schema.Types.ObjectId, ref: 'User' },
   Order_Id: { type: Schema.Types.ObjectId, ref: 'Order' },
 }, {

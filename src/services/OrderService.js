@@ -11,7 +11,16 @@ const createOrder = async (orderData) => {
         Order_Total,
         Address_Fullname,
         Address_Phone,
-        Address_Detail_Address
+        Address_Detail_Address,
+        Address_Type,
+        Address_Province_Id,
+        Address_Province_Name,
+        Address_District_Id,
+        Address_District_Name,
+        Address_WardCode,
+        Address_WardName,
+        Order_Fee,
+        Order_Delivery_Date,
     } = orderData;
 
     if (!Order_Details || Order_Details.length === 0) {
@@ -20,7 +29,7 @@ const createOrder = async (orderData) => {
 
     let finalAddressId = Address_Id;
 
-    // ✅ Trường hợp 1: Nếu có Address_Id ⇒ cập nhật
+    // Nếu có Address_Id ⇒ cập nhật
     if (Address_Id) {
         await Address.findByIdAndUpdate(Address_Id, {
             ...(Address_Fullname && { Address_Fullname }),
@@ -28,30 +37,38 @@ const createOrder = async (orderData) => {
             ...(Address_Detail_Address && { Address_Detail_Address }),
         });
     } else {
-        // ✅ Trường hợp 2: Nếu không có Address_Id ⇒ tạo mới
+        // Nếu không có Address_Id ⇒ tạo mới
         const newAddress = await Address.create({
             User_Id,
+            Address_Type: Address_Type || 'SHIPPING',
+            Address_Province_Id,
+            Address_Province_Name,
+            Address_District_Id,
+            Address_District_Name,
+            Address_WardCode,
+            Address_WardName,
+            Address_Detail_Address,
             Address_Fullname,
             Address_Phone,
-            Address_Detail_Address,
-            Address_Type: 'NEW', // bạn có thể đặt là 'ORDER' hay 'TEMP' nếu muốn
             Created_At: new Date()
         });
         finalAddressId = newAddress._id;
     }
 
-    // ✅ Tạo đơn hàng
+    // Tạo đơn hàng
     const order = await Order.create({
         User_Id,
         Address_Id: finalAddressId,
         Payment_Method_Id,
-        Order_Total,
+        Order_Total_Amount: Order_Total,
         Order_Status_Id: '687a33cb4f5380644ac977ca', // Chờ xác nhận
         Payment_Status_Id: '687a33cc4f5380644ac977d9', // COD
-        Created_At: new Date()
+        Created_At: new Date(),
+        Order_Fee,
+        Order_Delivery_Date: Order_Delivery_Date,
     });
 
-    // ✅ Tạo chi tiết đơn hàng
+    // Tạo chi tiết đơn hàng
     const details = await Promise.all(Order_Details.map(async item => {
         return await OrderDetail.create({
             Order_Id: order._id,
@@ -61,6 +78,12 @@ const createOrder = async (orderData) => {
             Discount_Id: item.Discount_Id || null
         });
     }));
+
+    if (!Address_Id) {
+        await Address.findByIdAndUpdate(finalAddressId, {
+            Order_Id: order._id
+        });
+    }
 
     return {
         status: 'OK',
@@ -73,7 +96,7 @@ const getOrdersByUser = async (userId) => {
     const orders = await Order.find({ User_Id: userId })
         .populate('Order_Status_Id')
         .populate('Payment_Status_Id')
-        .populate('PaymentMethod_Id')
+        .populate('Payment_Method_Id')
         .populate('Address_Id')
         .sort({ Created_At: -1 });
 
@@ -83,24 +106,38 @@ const getOrdersByUser = async (userId) => {
     };
 };
 
-const getAllOrders = async () => {
-    const orders = await Order.find()
-        .populate('User_Id')
-        .populate('Order_Status_Id')
-        .populate('PaymentMethod_Id')
-        .sort({ Created_At: -1 });
+const getAllOrders = async (req) => {
+    try {
+        const query = {};
+        const {
+            Order_Status_Id,
+            Payment_Method_Id,
+            Payment_Status_Id
+        } = req.query;
 
-    return {
-        status: 'OK',
-        data: orders
-    };
+        if (Order_Status_Id) query.Order_Status_Id = Order_Status_Id;
+        if (Payment_Method_Id) query.Payment_Method_Id = Payment_Method_Id;
+        if (Payment_Status_Id) query.Payment_Status_Id = Payment_Status_Id;
+
+        const orders = await Order.find(query)
+            .populate('User_Id')
+            .populate('Order_Status_Id')
+            .populate('Payment_Method_Id')
+            .populate('Payment_Status_Id')
+            .sort({ createdAt: -1 });
+
+        return { status: 'OK', data: orders };
+    } catch (error) {
+        console.log('OrderService getAllOrders error:', error);
+        throw new Error(error.message);
+    }
 };
 
 const getOrderById = async (orderId) => {
     const order = await Order.findById(orderId)
         .populate('Order_Status_Id')
         .populate('Payment_Status_Id')
-        .populate('PaymentMethod_Id')
+        .populate('Payment_Method_Id')
         .populate('Address_Id')
         .populate('User_Id');
 
@@ -127,6 +164,21 @@ const updateOrderStatus = async (orderId, statusId) => {
     };
 };
 
+const updateOrder = async (orderId, updateFields) => {
+    const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        updateFields,
+        { new: true }
+    );
+
+    return {
+        status: 'OK',
+        message: 'Cập nhật đơn hàng thành công',
+        data: updatedOrder
+    };
+};
+
+
 const deleteOrder = async (orderId) => {
     await OrderDetail.deleteMany({ Order_Id: orderId });
     await Order.findByIdAndDelete(orderId);
@@ -143,5 +195,6 @@ module.exports = {
     getAllOrders,
     getOrderById,
     updateOrderStatus,
+    updateOrder,
     deleteOrder
 };

@@ -17,6 +17,9 @@ router.get('/:orderId', OrderController.getOrderById);
 // Cập nhật trạng thái đơn hàng
 router.put('/:orderId/status', OrderController.updateOrderStatus);
 
+// Cập nhật toàn bộ thông tin đơn hàng (admin)
+router.put('/:orderId', OrderController.updateOrder);
+
 // Xoá đơn hàng
 router.delete('/:orderId', OrderController.deleteOrder);
 

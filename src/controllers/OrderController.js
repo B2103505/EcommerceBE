@@ -21,7 +21,8 @@ const getOrdersByUser = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
     try {
-        const result = await OrderService.getAllOrders();
+        const result = await OrderService.getAllOrders(req);
+        // console.log(JSON.stringify(result, null, 2));
         return res.status(200).json(result);
     } catch (error) {
         return res.status(500).json({ status: 'ERR', message: error.message });
@@ -49,6 +50,18 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+const updateOrder = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        const updateFields = req.body;
+
+        const result = await OrderService.updateOrder(orderId, updateFields);
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ status: 'ERR', message: error.message });
+    }
+};
+
 const deleteOrder = async (req, res) => {
     try {
         const orderId = req.params.orderId;
@@ -65,5 +78,6 @@ module.exports = {
     getAllOrders,
     getOrderById,
     updateOrderStatus,
-    deleteOrder
+    deleteOrder,
+    updateOrder,
 };
