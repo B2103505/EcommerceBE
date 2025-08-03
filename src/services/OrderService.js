@@ -1,6 +1,11 @@
 const Order = require('../models/Order');
 const OrderDetail = require('../models/OrderDetail');
 const Address = require('../models/Address');
+const Plant = require('../models/Plant');
+const PaymentStatus = require('../models/PaymentStatus');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+
 
 const createOrder = async (orderData) => {
     const {
@@ -70,6 +75,21 @@ const createOrder = async (orderData) => {
 
     // Tạo chi tiết đơn hàng
     const details = await Promise.all(Order_Details.map(async item => {
+        const plant = await Plant.findById(item.Plant_Id);
+
+        if (!plant) {
+            throw new Error(`Không tìm thấy cây có ID: ${item.Plant_Id}`);
+        }
+
+        if (item.Order_Detail_Quantity > plant.Plant_Quantity) {
+            throw new Error(`Số lượng đặt vượt quá tồn kho của sản phẩm: ${plant.Plant_Name}`);
+        }
+
+        // Cập nhật số lượng tồn và đã bán
+        plant.Plant_Quantity -= item.Order_Detail_Quantity;
+        plant.Plant_Sold += item.Order_Detail_Quantity;
+        await plant.save();
+
         return await OrderDetail.create({
             Order_Id: order._id,
             Plant_Id: item.Plant_Id,
@@ -178,7 +198,6 @@ const updateOrder = async (orderId, updateFields) => {
     };
 };
 
-
 const deleteOrder = async (orderId) => {
     await OrderDetail.deleteMany({ Order_Id: orderId });
     await Order.findByIdAndDelete(orderId);
@@ -189,12 +208,36 @@ const deleteOrder = async (orderId) => {
     };
 };
 
+const hasPurchased = async (userId, plantId) => {
+    try {
+        const userObjectId = new mongoose.Types.ObjectId(userId);
+        const plantObjectId = new mongoose.Types.ObjectId(plantId);
+
+        const paidStatus = await PaymentStatus.findOne({ Payment_Status_Name: 'Đã thanh toán' });
+
+        const paidOrders = await Order.find({
+            User_Id: userObjectId,
+            Payment_Status_Id: paidStatus?._id
+        });
+
+        const paidOrderIds = paidOrders.map(o => o._id);
+
+        const purchasedDetail = await OrderDetail.findOne({
+            Order_Id: { $in: paidOrderIds },
+            Plant_Id: plantObjectId
+        });
+
+        return !!purchasedDetail;
+    } catch (err) {
+        console.error('hasPurchased error:', err);
+        throw err;
+    }
+};
+
+
 module.exports = {
-    createOrder,
-    getOrdersByUser,
-    getAllOrders,
-    getOrderById,
-    updateOrderStatus,
-    updateOrder,
-    deleteOrder
+    createOrder, getOrdersByUser,
+    getAllOrders, getOrderById,
+    updateOrderStatus, updateOrder,
+    deleteOrder, hasPurchased
 };

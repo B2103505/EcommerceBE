@@ -26,7 +26,7 @@ const createPlantService = (NewPlant) => {
             const createPlant = await Plant.create({
                 Plant_Name, Plant_Scientific_Name, Plant_Leaf_Shape, Plant_Leaf_Color, Plant_Growth_Form, Plant_Size,
                 Plant_Context, Plant_Light, Plant_Foliage_Density, Plant_Other_Name, Plant_Description, Plant_Quantity,
-                Plant_Status, Plant_Price, Plant_Images, Category_Id
+                Plant_Status, Plant_Price, Plant_Images, Category_Ids
             })
 
             if (createPlant) {
@@ -184,8 +184,39 @@ const PlantsByCateService = async (categoryId, page, limit) => {
     };
 };
 
+const SearchAdvancedPlantService = async (limit, page, sortOrder, sortField, filters) => {
+    const query = {};
+
+    // Tạo điều kiện tìm kiếm linh hoạt từ filters
+    for (const key in filters) {
+        const value = filters[key];
+
+        if (Array.isArray(value)) {
+            query[key] = { $in: value };
+        } else if (typeof value === 'string' && value.trim() !== '') {
+            query[key] = { $regex: value, $options: 'i' };
+        }
+    }
+
+    const total = await Plant.countDocuments(query);
+
+    const plants = await Plant.find(query)
+        .sort(sortField ? { [sortField]: sortOrder === 'desc' ? -1 : 1 } : {})
+        .skip((page - 1) * limit)
+        .limit(limit);
+
+    return {
+        total,
+        plants,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit)
+    };
+};
+
+
 module.exports = {
     createPlantService, UpdatePlantService,
     DetailPlantService, DeletePlantService,
-    GetAllPlantService, PlantsByCateService
+    GetAllPlantService, PlantsByCateService, 
+    SearchAdvancedPlantService
 }

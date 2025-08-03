@@ -72,6 +72,25 @@ const deleteOrder = async (req, res) => {
     }
 };
 
+const hasPurchased = async (req, res) => {
+    try {
+        const { userId, plantId } = req.params;
+
+        const result = await OrderService.hasPurchased(userId, plantId);
+        // console.log('result', result);
+        return res.status(200).json({
+            status: 'OK',
+            hasPurchased: result
+        });
+    } catch (error) {
+        console.log('hasPurchased error:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     createOrder,
     getOrdersByUser,
@@ -79,5 +98,5 @@ module.exports = {
     getOrderById,
     updateOrderStatus,
     deleteOrder,
-    updateOrder,
+    updateOrder, hasPurchased
 };

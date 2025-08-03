@@ -23,4 +23,7 @@ router.put('/:orderId', OrderController.updateOrder);
 // Xoá đơn hàng
 router.delete('/:orderId', OrderController.deleteOrder);
 
+//kiểm tra đã mua chưa
+router.get('/has-purchased/:userId/:plantId', OrderController.hasPurchased);
+
 module.exports = router;

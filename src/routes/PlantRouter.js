@@ -10,5 +10,6 @@ router.get('/detail/:id', PlantController.DetailPlantController);
 router.delete('/delete/:id', AuthMiddleWare, PlantController.DeletePlantController);
 router.get('/getAllPlant', PlantController.GetAllPlantController);
 router.get('/by-cate/:categoryId', PlantController.PlantByCateController)
+router.post('/search-advanced', PlantController.SearchAdvancedPlantController);
 
 module.exports = router

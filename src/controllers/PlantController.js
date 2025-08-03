@@ -148,9 +148,39 @@ const PlantByCateController = async (req, res) => {
     }
 };
 
+const SearchAdvancedPlantController = async (req, res) => {
+    try {
+        const {
+            page = 1,
+            limit = 8,
+            sortField,
+            sortOrder,
+            filters = {}
+        } = req.body;
+
+        const response = await PlantService.SearchAdvancedPlantService(
+            Number(limit),
+            Number(page),
+            sortOrder,
+            sortField,
+            filters
+        );
+
+        return res.status(200).json(response);
+    } catch (e) {
+        console.error('❌ Error in SearchAdvancedPlantController:', e);
+        res.status(400).json({
+            status: 'ERR',
+            message: e.message || 'Something went wrong',
+            stack: e.stack
+        });
+    }
+};
+
 
 module.exports = {
     createPlantController, UpdatePlantController,
     DetailPlantController, DeletePlantController,
     GetAllPlantController, PlantByCateController,
+    SearchAdvancedPlantController
 }
