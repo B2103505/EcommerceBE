@@ -17,4 +17,8 @@ const orderSchema = new Schema({
     },
 }, { timestamps: true });
 
+orderSchema.index({ createdAt: 1 });           // Tìm đơn theo ngày (thống kê theo thời gian)
+orderSchema.index({ Payment_Status_Id: 1 });  // Lọc theo trạng thái thanh toán
+orderSchema.index({ Payment_Method_Id: 1 });  // Lọc theo phương thức thanh toán
+
 module.exports = mongoose.model('Order', orderSchema);

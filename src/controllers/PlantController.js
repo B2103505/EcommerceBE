@@ -177,10 +177,22 @@ const SearchAdvancedPlantController = async (req, res) => {
     }
 };
 
+const getSuggestedPlants = async (req, res) => {
+    const plantId = req.params.id;
+    const limit = parseInt(req.query.limit) || 8;
+
+    try {
+        const data = await PlantService.getSuggestedPlants(plantId, limit);
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 
 module.exports = {
     createPlantController, UpdatePlantController,
     DetailPlantController, DeletePlantController,
     GetAllPlantController, PlantByCateController,
-    SearchAdvancedPlantController
+    SearchAdvancedPlantController, getSuggestedPlants
 }

@@ -9,4 +9,8 @@ const orderDetailSchema = new Schema({
   Discount_Id: { type: Schema.Types.ObjectId, ref: 'Discount' },
 }, { timestamps: true });
 
+orderDetailSchema.index({ createdAt: 1 });    // Thống kê theo ngày bán
+orderDetailSchema.index({ Order_Id: 1 });     // Join nhanh Order <-> OrderDetail
+orderDetailSchema.index({ Plant_Id: 1 });     // Thống kê theo sản phẩm
+
 module.exports = mongoose.model('OrderDetail', orderDetailSchema);

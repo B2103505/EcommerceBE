@@ -37,4 +37,7 @@ const plantSchema = new Schema({
 
 }, { timestamps: true });
 
+plantSchema.index({ Plant_Quantity: 1 });     // Lọc tồn kho
+plantSchema.index({ Plant_Sold: -1 });        // Top sản phẩm bán chạy
+
 module.exports = mongoose.model('Plant', plantSchema);

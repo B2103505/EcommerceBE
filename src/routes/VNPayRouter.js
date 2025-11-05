@@ -51,7 +51,7 @@ router.get('/vnpay-return', async (req, res) => {
         });
         res.redirect(`http://localhost:3000/order-success?orderId=${query.vnp_TxnRef}`);
     } else {
-        await Order.findByIdAndUpdate(orderId, {
+        await Order.findByIdAndUpdate(query.vnp_TxnRef, {
             Payment_Status_Id: '687a33ce4f5380644ac977ee' //thanh toán thất bại
         });
         res.redirect(`http://localhost:3000/order-failed?orderId=${query.vnp_TxnRef}`);

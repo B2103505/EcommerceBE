@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt')
 const { generalAccessToken, generalRefreshToken } = require('./JwtService');
 const Category = require('../models/Category');
 
-
 const createPlantService = (NewPlant) => {
     return new Promise(async (resolve, reject) => {
 
@@ -213,10 +212,22 @@ const SearchAdvancedPlantService = async (limit, page, sortOrder, sortField, fil
     };
 };
 
+const getSuggestedPlants = async (plantId, limit = 8) => {
+    const currentPlant = await Plant.findById(plantId).lean();
+    if (!currentPlant || !currentPlant.Plant_Context) return [];
+
+    return await Plant.find({
+        _id: { $ne: plantId },
+        Plant_Context: currentPlant.Plant_Context,
+        Plant_Status: 'available'
+    })
+    .limit(limit)
+    .lean();
+};
 
 module.exports = {
     createPlantService, UpdatePlantService,
     DetailPlantService, DeletePlantService,
     GetAllPlantService, PlantsByCateService, 
-    SearchAdvancedPlantService
+    SearchAdvancedPlantService, getSuggestedPlants
 }
